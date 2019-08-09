@@ -1,0 +1,1 @@
+# kafka-monitor-ui-basic
