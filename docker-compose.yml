@@ -1,13 +1,20 @@
 version: '3'
+networks: 
+  main:
+    driver: bridge
 
 services:
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
+    networks: 
+      - main
     ports:
       - 2181:2181
 
   kafka:
     image: wurstmeister/kafka:2.11-2.0.0
+    networks:
+      - main
     depends_on:
       - zookeeper
     ports:
@@ -20,11 +27,13 @@ services:
       KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_CREATE_TOPICS: testtopic:1:1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+      KAFKA_CREATE_TOPICS: testlorem:1:1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
   kafka-rest-proxy:
     image: confluentinc/cp-kafka-rest:5.2.1
+    networks:
+      - main
     hostname: kafka-rest-proxy
     ports:
       - 8082:8082
@@ -38,12 +47,14 @@ services:
 
   kafka-topics-ui:
     image: landoop/kafka-topics-ui:0.9.4
+    networks: 
+      - main
     hostname: kafka-topics-ui
     ports:
       - 8000:8000
     environment:
       KAFKA_REST_PROXY_URL: http://kafka-rest-proxy:8082/
-      PROXY: true
+      PROXY: "true"
     depends_on:
       - zookeeper
       - kafka
